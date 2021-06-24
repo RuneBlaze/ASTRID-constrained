@@ -61,9 +61,9 @@ class NState:
         Q = defaultdict(dict)
         for i in self.D:
             for j in self.D:
-                Q[i][j] = (len(self.D) - 2) * self.D[i][j]
-                - sum(self.D[i][k] for k in self.D)
-                - sum(self.D[j][k] for k in self.D)
+                Q[i][j] = (len(nodes) - 2) * self.D[i][j]
+                - sum(self.D[i][k] for k in nodes)
+                - sum(self.D[j][k] for k in nodes)
         mindis = 121231234
         minpair = None
         # print([n.label for n in nodes])
