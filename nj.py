@@ -56,29 +56,27 @@ class NJState:
 class NState:
     def __init__(self, D):
         self.D = D
-    def find_closest(self, nodes):
-        # print(nodes[0].get_parent().newick())
+    def find_closest(self):
         Q = defaultdict(dict)
         for i in self.D:
             for j in self.D:
-                Q[i][j] = (len(nodes) - 2) * self.D[i][j]
-                - sum(self.D[i][k] for k in nodes)
-                - sum(self.D[j][k] for k in nodes)
+                Q[i][j] = (len(self.D) - 2) * self.D[i][j]
+                - sum(self.D[i][k] for k in self.D)
+                - sum(self.D[j][k] for k in self.D)
         mindis = 121231234
         minpair = None
-        # print([n.label for n in nodes])
-        for a, i in enumerate(nodes):
-            for b, j in enumerate(nodes):
-                if a == b:
+        # print("loop!")
+        for a, i in enumerate(self.D):
+            for b, j in enumerate(self.D):
+                if i == j:
                     continue
-                # print(a, b)
-                # print(i.label, j.label)
-                # print(Q[i][j])
-                # print([i.label, j.label])
+                # print(i.get_parent() == j.get_parent())
+                if i.get_parent() != j.get_parent():
+                    continue
                 if Q[i][j] < mindis:
                     mindis = Q[i][j]
-                    minpair = (a, b)
-        return sorted(minpair)
+                    minpair = (i, j)
+        return minpair
 
     def join(self, u, v, n):
         # print([u, v, n])
@@ -112,25 +110,42 @@ def treeresolve(tree, ts, D):
             dis[i][j] = D[ts[i.label],ts[j.label]]
     state = NState(dis)
     tree.suppress_unifurcations()
-    for u in tree.traverse_postorder():
-        if u.is_leaf():
+    while len(state.D) > 1:
+        i, j = state.find_closest()
+        if i.get_parent().num_children() == 2:
+            state.join(i, j, i.get_parent())
             continue
-        else:
-            # then we see if we need to resolve
-            # children = u.child_nodes()
-            while len(u.child_nodes()) > 2:
-                i, j = state.find_closest(u.child_nodes())
-                c2 = u.children.pop(j)
-                c1 = u.children.pop(i)
-                nn = tsf.Node(edge_length=0)
-                u.add_child(nn)
-                nn.add_child(c1)
-                nn.add_child(c2)
-                state.join(c1, c2, nn)
-                # print(nn.newick())
-            if len(u.child_nodes()) == 2: # binary
-                # print("binary tree!")
-                state.join(*u.child_nodes(), u)
+        u = i.get_parent()
+        u.remove_child(i)
+        u.remove_child(j)
+        nn = tsf.Node(edge_length=0)
+        u.add_child(nn)
+        nn.add_child(i)
+        nn.add_child(j)
+        state.join(i, j, nn)
+        # print("")
+        # print(tree.newick())
+        # print([k.newick() for k in state.D])
+        # print([k.get_parent().newick() for k in state.D])
+        # print(state.D)
+        
+    # for u in tree.traverse_postorder():
+    #     if u.is_leaf():
+    #         continue
+    #     else:
+    #         while len(u.child_nodes()) > 2:
+    #             i, j = state.find_closest(u.child_nodes())
+    #             c2 = u.children.pop(j)
+    #             c1 = u.children.pop(i)
+    #             nn = tsf.Node(edge_length=0)
+    #             u.add_child(nn)
+    #             nn.add_child(c1)
+    #             nn.add_child(c2)
+    #             state.join(c1, c2, nn)
+    #             # print(nn.newick())
+    #         if len(u.child_nodes()) == 2: # binary
+    #             # print("binary tree!")
+    #             state.join(*u.child_nodes(), u)
     return tree
 
 
