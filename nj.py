@@ -1,76 +1,53 @@
 from collections import defaultdict
-# TODO: fix NJ code
-class NJState:
-    def __init__(self, ts, D, whitelist):
-        self.dis = {}
-        self.records = {}
-        self.whitelist = whitelist
-        self.N = len(ts)
-        for i in range(len(ts)):
-            self.dis[frozenset(ts[i])] = {}
-            self.records[frozenset(ts[i])] = ts[i]
-        for i in range(len(ts)):
-            for j in range(len(ts)):
-                self.dis[frozenset(ts[i])][frozenset(ts[j])] = D[i, j]
-    
-    def nj(self):
-        while len(self.dis) > 1:
-            self.step()
-        for k in self.dis:
-            return self.records[k]
-
-    def step(self):
-        Q = defaultdict(dict)
-        for i in self.dis:
-            for j in self.dis:
-                Q[i][j] = (len(self.dis) - 2) * self.dis[i][j]
-                - sum(self.dis[i][k] for k in self.dis)
-                - sum(self.dis[j][k] for k in self.dis)
-        mindis = 121231234
-        minpair = None
-        for i in self.dis:
-            for j in self.dis:
-                if i == j:
-                    continue
-                if j not in self.whitelist[i].get_parent().allowedset:
-                    continue
-                if Q[i][j] < mindis:
-                    mindis = Q[i][j]
-                    minpair = (i, j)
-        assert minpair != None
-        a, b = minpair
-        self.records[a | b] = (self.records[a], self.records[b])
-        newnode = a | b
-        u = newnode
-        d = lambda i, j: self.dis[i][j]
-        for k in self.dis:
-            self.dis[k][u] = 0.5 * (d(a, k) + d(b, k) - d(a, b))
-        self.dis[u] = {}
-        for k in self.dis:
-            if k == u:
-                self.dis[u][k] = 0
-            self.dis[u][k] = self.dis[k][u]
-        del self.dis[a]
-        del self.dis[b]
+from icecream import ic
+from math import fsum
 
 class NState:
     def __init__(self, D):
         self.D = D
     def find_closest(self):
         Q = defaultdict(dict)
+        R = {}
         for i in self.D:
             for j in self.D:
-                Q[i][j] = (len(self.D) - 2) * self.D[i][j]
-                - sum(self.D[i][k] for k in self.D)
-                - sum(self.D[j][k] for k in self.D)
+                if i in Q[j]:
+                    Q[i][j] = Q[j][i]
+                    continue
+                if i.get_parent() != j.get_parent():
+                    continue
+                if i not in R:
+                    R[i] = fsum(self.D[i][k] for k in self.D)
+                if j not in R:
+                    R[j] = fsum(self.D[j][k] for k in self.D)
+                # if i.label == 'a' and j.label == 'b':
+                    # print("AABB")
+                    # print(len(self.D),self.D[i][j])
+                    #ic([self.D[i][k] for k in self.D])
+                    #ic([self.D[j][k] for k in self.D])
+                    #ic((len(self.D) - 2) * self.D[i][j]
+                # - sum(self.D[i][k] for k in self.D)
+                # - sum(self.D[j][k] for k in self.D))
+                #ic(self.D[i][j])
+                #ic((len(self.D) - 2) * self.D[i][j]
+                # - sum(self.D[i][k] for k in self.D)
+                # - sum(self.D[j][k] for k in self.D))
+                #ic(self.D[i][j])
+                # val = (len(self.D) - 2) * self.D[i][j] - sum(self.D[i][k] for k in self.D) - sum(self.D[j][k] for k in self.D)
+                #ic(self.D[i][j])
+                #ic(val)
+                #ic(len(self.D))
+                Q[i][j] = (len(self.D) - 2) * self.D[i][j] - R[i] - R[j]
+                # print(f"{(i.label, j.label)}: {Q[i][j]}")
+        # for u in Q:
+        #     for v in Q:
+        #         print(f"{(u.label, v.label)}: {Q[u][v]}")
         mindis = 121231234
         minpair = None
-        # print("loop!")
+
         for a, i in enumerate(self.D):
             for b, j in enumerate(self.D):
                 if i == j:
                     continue
-                # print(i.get_parent() == j.get_parent())
                 if i.get_parent() != j.get_parent():
                     continue
                 if Q[i][j] < mindis:
