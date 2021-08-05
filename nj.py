@@ -1,6 +1,7 @@
 from collections import defaultdict
 from icecream import ic
 from math import fsum
+import numpy as np
 
 class NState:
     def __init__(self, D):
@@ -13,34 +14,17 @@ class NState:
                 if i in Q[j]:
                     Q[i][j] = Q[j][i]
                     continue
-                if i.get_parent() != j.get_parent():
+                ip = i.get_parent()
+                jp = j.get_parent()
+                if ip != jp:
                     continue
+                if ip.num_children() == 2:
+                    return (i, j)
                 if i not in R:
                     R[i] = fsum(self.D[i][k] for k in self.D)
                 if j not in R:
                     R[j] = fsum(self.D[j][k] for k in self.D)
-                # if i.label == 'a' and j.label == 'b':
-                    # print("AABB")
-                    # print(len(self.D),self.D[i][j])
-                    #ic([self.D[i][k] for k in self.D])
-                    #ic([self.D[j][k] for k in self.D])
-                    #ic((len(self.D) - 2) * self.D[i][j]
-                # - sum(self.D[i][k] for k in self.D)
-                # - sum(self.D[j][k] for k in self.D))
-                #ic(self.D[i][j])
-                #ic((len(self.D) - 2) * self.D[i][j]
-                # - sum(self.D[i][k] for k in self.D)
-                # - sum(self.D[j][k] for k in self.D))
-                #ic(self.D[i][j])
-                # val = (len(self.D) - 2) * self.D[i][j] - sum(self.D[i][k] for k in self.D) - sum(self.D[j][k] for k in self.D)
-                #ic(self.D[i][j])
-                #ic(val)
-                #ic(len(self.D))
                 Q[i][j] = (len(self.D) - 2) * self.D[i][j] - R[i] - R[j]
-                # print(f"{(i.label, j.label)}: {Q[i][j]}")
-        # for u in Q:
-        #     for v in Q:
-        #         print(f"{(u.label, v.label)}: {Q[u][v]}")
         mindis = 121231234
         minpair = None
 
