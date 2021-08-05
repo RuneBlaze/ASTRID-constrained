@@ -4,8 +4,9 @@ from math import fsum
 import numpy as np
 
 class NState:
-    def __init__(self, D):
+    def __init__(self, D, earlystopping=False):
         self.D = D
+        self.earlystopping = earlystopping
     def find_closest(self):
         Q = defaultdict(dict)
         R = {}
@@ -18,7 +19,7 @@ class NState:
                 jp = j.get_parent()
                 if ip != jp:
                     continue
-                if ip.num_children() == 2:
+                if self.earlystopping and ip.num_children() == 2:
                     return (i, j)
                 if i not in R:
                     R[i] = fsum(self.D[i][k] for k in self.D)
