@@ -20,7 +20,6 @@ if __name__ == "__main__":
     parser.add_argument("-t", "--tree", type=str, help="constraint trees")
     args = parser.parse_args()
     tree = None
-    # print(args.tree)
     if args.tree:
         with open(args.tree) as fh:
             tree = ts.read_tree_newick(fh.read())
@@ -30,7 +29,6 @@ if __name__ == "__main__":
                 tree = ts.read_tree_newick(l)
                 starlize(tree)
                 break
-
     with open(args.input, "r") as o: genes = o.readlines()
     ts = ad.get_ts(genes)
     D = ad.mk_distance_matrix(ts, genes)
