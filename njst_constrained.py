@@ -17,7 +17,7 @@ if __name__ == "__main__":
                         help="Input tree list file", required=True)
     parser.add_argument("-o", "--output", type=str,
                         help="Output tree file", required=True)
-    parser.add_argument("-t", "--tree", type=str, help="constraint trees")
+    parser.add_argument("-j", "--tree", type=str, help="constraint trees")
     args = parser.parse_args()
     tree = None
     if args.tree:
