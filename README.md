@@ -1,13 +1,18 @@
 Constrained NJst
 ===================
 
-Constrained NJst (NJst-J) similar to that of ASTRAL https://doi.org/10.1186/s12864-020-6607-z
+NJst-constrained (NJst-J) is a summary method based on [NJst](https://academic.oup.com/sysbio/article/60/5/661/1644054)
+that can honor user constraints (analogous to [ASTRAL with user constraints](https://bmcgenomics.biomedcentral.com/articles/10.1186/s12864-020-6607-z), although this work uses a different approach). This uploaded version works only for x86_64 Linux machines.
 
 ## Command
 
 ```
 python3 njst_constrained.py -i $genes -j $constraint -o $output
 ```
+
+ - `$genes`: path to newline-separated Newick formatted single-label gene trees
+ - `$constraint`: the user-specified unresolved constraint tree
+ - `$output`: output species-tree path
 
 ## Dependencies
 
@@ -17,9 +22,10 @@ to its dependency on `asterid` (https://pypi.org/project/asterid/), a Python3 bi
 NJst constrained requires the following packages from pip:
 
 ```python3
+treeswift # we used v1.1.19, although latest stable version likely also works
 asterid # currently for Linux x86_64 only
 icecream
-lupa
+lupa # Lua bindings for Python, it comes with a default Lua prepackaged
 ```
 
 Additionally, NJst-J (through `lupa`) uses Lua for faster distance computations,
