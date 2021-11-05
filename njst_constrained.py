@@ -11,6 +11,14 @@ def starlize(tree):
         n.contract()
     return tree
 
+def onlytopology(tree):
+    for n in tree.traverse_preorder(leaves=False, internal=True):
+        n.edge_length = None
+        n.label = None
+    for n in tree.traverse_leaves():
+        n.edge_length = None
+    return tree
+
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description='run ASTRID')
     parser.add_argument("-i", "--input", type=str,
@@ -33,6 +41,7 @@ if __name__ == "__main__":
     ts = ad.get_ts(genes)
     D = ad.mk_distance_matrix(ts, genes)
     merged_tree = nj.treeresolve_lua(tree, ts, D)
+    onlytopology(merged_tree)
     res = merged_tree.newick()
     if args.output == "-":
         print(res)

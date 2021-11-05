@@ -14,6 +14,8 @@ python3 njst_constrained.py -i $genes -j $constraint -o $output
  - `$constraint`: the user-specified unresolved constraint tree
  - `$output`: output species-tree path
 
+NJst-J currently outputs a tree with only the tree topology. It is likely that ASTRAL should be used for estimating branch lengths and support values.
+
 ## Dependencies
 
 Again, NJst-J currently only works on Linux (x86_64 architecture) due
