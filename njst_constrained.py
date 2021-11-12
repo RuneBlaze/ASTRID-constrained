@@ -38,9 +38,19 @@ if __name__ == "__main__":
                 starlize(tree)
                 break
     with open(args.input, "r") as o: genes = o.readlines()
+    gleafset = set(l.label for l in ts.read_tree_newick(genes[0]).traverse_leaves())
+    sleafset = set(l.label for l in tree.traverse_leaves())
+    rogue = gleafset - sleafset
+    rogueleaves = []
+    for l in rogue:
+        n = ts.Node(edge_length=0)
+        n.label = l
+        n.rogue = True
+        tree.root.add_child(n)
+        rogueleaves.append(n)
     ts = ad.get_ts(genes)
     D = ad.mk_distance_matrix(ts, genes)
-    merged_tree = nj.treeresolve_lua(tree, ts, D)
+    merged_tree = nj.treeresolve_lua(tree, ts, D, rogueleaves)
     onlytopology(merged_tree)
     res = merged_tree.newick()
     if args.output == "-":

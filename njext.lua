@@ -1,5 +1,6 @@
 D = {}
 parent = {}
+rogue = {}
 
 function find_closest()
     local mindis = 1231231234
@@ -19,7 +20,7 @@ function find_closest()
             local j = active[_j]
             local ip = parent[i]
             local jp = parent[j]
-            if ip == jp then
+            if rogue[i] or rogue[j] or ip == jp then
                 if R[i] == nil then
                     R[i] = 0
                     for k, _ in pairs(D) do

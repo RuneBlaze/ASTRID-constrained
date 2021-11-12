@@ -4,6 +4,9 @@ Constrained NJst
 NJst-constrained (NJst-J) is a summary method based on [NJst](https://academic.oup.com/sysbio/article/60/5/661/1644054)
 that can honor user constraints (analogous to [ASTRAL with user constraints](https://bmcgenomics.biomedcentral.com/articles/10.1186/s12864-020-6607-z), although this work uses a different approach). This uploaded version works only for x86_64 Linux machines.
 
+This branch contains non-widely tested code for dealing with incomplete constraints
+(constraint trees with some taxa missing).
+
 ## Command
 
 ```
